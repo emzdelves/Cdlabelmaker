@@ -1,0 +1,10 @@
+<!-- Simple placeholder 512x512 SVG icon. Replace with your artwork if desired. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="100%" height="100%" fill="#1976d2" rx="64"/>
+  <g fill="#fff" transform="translate(64,64)">
+    <circle cx="192" cy="192" r="170" fill="#fff" opacity="0.06"/>
+    <circle cx="192" cy="192" r="148" fill="#fff" opacity="0.12"/>
+    <circle cx="192" cy="192" r="140" fill="#1976d2"/>
+    <circle cx="192" cy="192" r="36" fill="#fff"/>
+  </g>
+</svg>
