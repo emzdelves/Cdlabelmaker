@@ -54,19 +54,74 @@
       <ul>
         <li>Default DPI is 300 (good for printing). Increase DPI if your print shop requires higher resolution.</li>
         <li>Output filename will be <code>cd-label.png</code>. The PNG has transparent regions outside the outer circle and inside the centre hole.</li>
-        <li>To install as an app on Android: open this page in Chrome, open menu    Add to Home screen.</li>
+        <li>To install as an app on Android: open this page in Chrome, open menu → Add to Home screen.</li>
       </ul>
     </section>
   </main>
 
+  <div id="updateToast" class="update-toast" hidden>
+    <span id="updateMsg">A new version is available.</span>
+    <button id="reloadBtn">Update</button>
+    <button id="dismissBtn">Dismiss</button>
+  </div>
+
   <script src="app.js"></script>
 
   <script>
-    // Register the service worker for offline installability
+    // Register the service worker for offline installability and show update UI
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('Service Worker registered:', reg.scope))
-        .catch(err => console.warn('SW registration failed:', err));
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        console.log('Service Worker registered:', reg.scope);
+
+        // detect updates
+        if (reg.waiting) {
+          showUpdateUI(reg);
+        }
+
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          newSW.addEventListener('statechange', () => {
+            if (newSW.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                // new update available
+                showUpdateUI(reg);
+              }
+            }
+          });
+        });
+
+      }).catch(err => console.warn('SW registration failed:', err));
+
+      // Listen for controller change to reload if the new SW takes control
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('Controller changed — reloading page');
+        window.location.reload();
+      });
+
+      // Listen for messages from SW
+      navigator.serviceWorker.addEventListener('message', (evt) => {
+        if (evt.data && evt.data.type === 'OFFLINE') {
+          console.log('App is offline (from SW)');
+        }
+      });
+    }
+
+    function showUpdateUI(reg) {
+      const toast = document.getElementById('updateToast');
+      toast.hidden = false;
+      const reloadBtn = document.getElementById('reloadBtn');
+      const dismissBtn = document.getElementById('dismissBtn');
+
+      reloadBtn.onclick = () => {
+        // send message to SW to skipWaiting
+        if (reg.waiting) {
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+      };
+
+      dismissBtn.onclick = () => {
+        toast.hidden = true;
+      };
     }
   </script>
 </body>
