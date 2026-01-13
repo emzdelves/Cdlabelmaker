@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+  <title>CD Label Cropper</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1976d2">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>CD Label Cropper</h1>
+    <p>Crop images to a circular CD label (default 119mm with 18mm centre hole). Export PNG with transparency.</p>
+  </header>
+
+  <main>
+    <div class="controls">
+      <label class="btn">
+        Load image
+        <input id="fileInput" type="file" accept="image/*">
+      </label>
+
+      <div class="row">
+        <label>DPI:
+          <input id="dpiInput" type="number" min="72" max="1200" value="300">
+        </label>
+        <label>Outer mm:
+          <input id="outerMm" type="number" min="1" value="119">
+        </label>
+        <label>Inner mm:
+          <input id="innerMm" type="number" min="0" value="18">
+        </label>
+      </div>
+
+      <div class="row">
+        <label>Zoom:
+          <input id="zoomSlider" type="range" min="0.1" max="5" step="0.01" value="1">
+        </label>
+
+        <button id="resetBtn">Reset</button>
+        <button id="downloadBtn" disabled>Download PNG</button>
+      </div>
+
+      <p class="hint">Drag to move image. Pinch to zoom on touch. Use zoom slider to fine-tune. When ready, press Download.</p>
+    </div>
+
+    <div class="canvasWrap">
+      <canvas id="preview"></canvas>
+    </div>
+
+    <section class="notes">
+      <h2>Notes</h2>
+      <ul>
+        <li>Default DPI is 300 (good for printing). Increase DPI if your print shop requires higher resolution.</li>
+        <li>Output filename will be <code>cd-label.png</code>. The PNG has transparent regions outside the outer circle and inside the centre hole.</li>
+        <li>To install as an app on Android: open this page in Chrome, open menu    Add to Home screen.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+
+  <script>
+    // Register the service worker for offline installability
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker registered:', reg.scope))
+        .catch(err => console.warn('SW registration failed:', err));
+    }
+  </script>
+</body>
+</html>
